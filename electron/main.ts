@@ -10,17 +10,18 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string
 //     ? process.resourcesPath
 //     : app.getAppPath()
 
-function createWindow () {
+function createWindow() {
   mainWindow = new BrowserWindow({
     // icon: path.join(assetsPath, 'assets', 'icon.png'),
     width: 1100,
     height: 700,
-    backgroundColor: '#191622',
+    backgroundColor: 'white',
+
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
-    }
+      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    },
   })
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY)
@@ -30,18 +31,14 @@ function createWindow () {
   })
 }
 
-async function registerListeners () {
-  /**
-   * This comes from bridge integration, check bridge.ts
-   */
-  ipcMain.on('message', (_, message) => {
-    console.log(message)
-  })
-}
+ipcMain.on('message', (event, message) => {
+  console.log(message)
+  event.reply('asynchronous-reply', 'pong')
+})
 
-app.on('ready', createWindow)
+app
+  .on('ready', createWindow)
   .whenReady()
-  .then(registerListeners)
   .catch(e => console.error(e))
 
 app.on('window-all-closed', () => {
